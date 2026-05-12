@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REYNACG3 | Portfolio Artístico</title>
+    
+    <!-- Tipografías de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@200;300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* 
+        ========================================
+        VARIABLES Y ESTILOS BASE
+        ========================================
+        */
+        :root {
+            --black: #0a0a0a;
+            --pink: #f3bfd0;
+            --white: #f5f5f5;
+            --gray: #1a1a1a;
+            --soft-gray: #888;
+            --transition-slow: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+            --transition-fast: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 
+        ========================================
+        CARGADOR INICIAL
+        ========================================
+        */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: var(--black);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.2s ease;
+        }
+
+        .loader-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; filter: blur(2px); }
+            50% { opacity: 1; filter: blur(0px); }
+        }
+
+        /* 
+        ========================================
+        NAVEGACIÓN
+        ========================================
+        */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            font-weight: 300;
+            transition: var(--transition-fast);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--pink);
+            transition: var(--transition-fast);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .lang-btn {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: var(--white);
+            padding: 5px 10px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: var(--transition-fast);
+        }
+
+        .lang-btn:hover {
+            border-color: var(--pink);
+            color: var(--pink);
+        }
+
+        /* 
+        ========================================
+        SECCIONES
+        ========================================
+        */
+        section {
+            min-height: 100vh;
+            width: 100%;
+            display: none;
+            padding: 150px 5% 100px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Landing */
+        #landing {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 400;
+            font-style: italic;
+            line-height: 1;
+        }
+
+        /* About Me Section */
+        .about-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-image {
+            width: 100%;
+            border: 1px solid #222;
+            padding: 15px;
+            background: #0e0e0e;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            filter: grayscale(30%);
+        }
+
+        .about-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: var(--pink);
+        }
+
+        .about-text {
+            font-size: 0.95rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #ccc;
+        }
+
+        /* Galería (Masonry-like layout) */
+        .gallery-grid {
+            columns: 3 300px;
+            column-gap: 20px;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        .art-card {
+            break-inside: avoid;
+            margin-bottom: 20px;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .art-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+            filter: grayscale(20%);
+        }
+
+        .art-card:hover img {
+            transform: scale(1.03);
+            filter: grayscale(0%);
+        }
+
+        /* USK Section */
+        .usk-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .usk-header {
+            margin-bottom: 60px;
+        }
+
+        .usk-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .usk-header p {
+            color: var(--soft-gray);
+            max-width: 800px;
+            line-height: 1.8;
+        }
+
+        /* 
+        ========================================
+        LIGHTBOX
+        ========================================
+        */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(10,10,10,0.98);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            cursor: zoom-out;
+        }
+
+        .lightbox.active { display: flex; }
+
+        .lightbox img {
+            max-width: 100%;
+            max-height: 90vh;
+        }
+
+        /* 
+        ========================================
+        FOOTER
+        ========================================
+        */
+        footer {
+            padding: 50px 5%;
+            border-top: 1px solid #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--soft-gray);
+            letter-spacing: 1px;
+        }
+
+        .social-links a {
+            color: var(--white);
+            margin-left: 15px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--pink);
+        }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .about-container { grid-template-columns: 1fr; gap: 40px; }
+            .nav-links { display: none; }
+            footer { flex-direction: column; gap: 20px; text-align: center; }
+            .gallery-grid { columns: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loader Animado -->
+    <div id="loader">
+        <div class="loader-logo">REYNACG3</div>
+    </div>
+
+    <!-- Menú de Navegación -->
+    <nav class="nav-container">
+        <div class="nav-logo" onclick="navigateTo('landing')">REYNACG3</div>
+        <div class="nav-links">
+            <a href="#" onclick="navigateTo('arte')" data-key="nav-arte">ARTE</a>
+            <a href="#" onclick="navigateTo('usk')" data-key="nav-usk">USK</a>
+            <a href="#" onclick="navigateTo('about')" data-key="nav-about">ABOUT ME</a>
+            <button class="lang-btn" onclick="toggleLanguage()" id="btn-lang">EN</button>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main>
+        
+        <!-- SECCIÓN: LANDING -->
+        <section id="landing" class="active">
+            <div class="hero-content">
+                <h1 class="hero-title">REYNACG3</h1>
+                <p style="letter-spacing: 5px; font-weight: 200; text-transform: uppercase;" data-key="hero-sub">PORTAFOLIO DE ARTE</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: ARTE -->
+        <section id="arte">
+            <div style="text-align: center; margin-bottom: 60px;">
+                <h2 style="font-family: 'Playfair Display'; font-size: 3rem;" data-key="arte-title">MI ARTE</h2>
+                <p style="color: var(--pink); font-size: 0.8rem; letter-spacing: 2px;" data-key="arte-sub">CON AMOR</p>
+            </div>
+            <div class="gallery-grid" id="art-gallery">
+                <!-- Se rellena dinámicamente con JS -->
+            </div>
+        </section>
+
+        <!-- SECCIÓN: USK -->
+        <section id="usk">
+            <div class="usk-container">
+                <div class="usk-header">
+                    <h2 style="font-family: 'Playfair Display'; font-size: 3rem;">Urban Sketching</h2>
+                    <p data-key="usk-desc">La arquitectura y el urban sketching han influido profundamente en mi forma de observar y representar el entorno. En Chihuahua participo en las sesiones de USKChihuahua. Con mis dibujos personales, tiendo a ser algo perfeccionista, ya que puedo borrar y empezar de nuevo, pero con los marcadores, me doy la libertad de dejar que los errores se conviertan en parte del resultado final, aprendiendo de ellos para futuras correcciones.</p>
+                </div>
+                <div class="gallery-grid" id="usk-gallery">
+                    <!-- Se rellena dinámicamente con JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN: ABOUT ME -->
+        <section id="about">
+            <div class="about-container">
+                <div class="about-image">
+                    <img src="https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625978/1_qufls4.jpg" alt="About REYNACG3">
+                </div>
+                <div class="about-content">
+                    <h2 data-key="nav-about">About Me</h2>
+                    <div class="about-text" data-key="about-description">
+                        Soy una artista y estudiante de arquitectura interesada en explorar la conexión entre distintas disciplinas creativas. Aunque el grafito es mi técnica principal, disfruto experimentando con diversos materiales, no solo de manera individual, sino también buscando formas de combinarlos, ya sea mezclándolos o identificando visualmente qué materiales se usaron en la pieza final, usando esas mismas técnicas para trabajar con ellos. Me gusta explorar cosas nuevas y encontrar formas de conectarlas con mis otros intereses, buscando maneras de mejorar lo que ya sé, convirtiéndome en principiante en diferentes áreas y complementándolas entre sí. Disfruto dar regalos, compartir y sorprender a otros con mi arte, las sonrisas y los sentimientos que evoco en los demás son lo más valioso para mí.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <img src="" id="lb-img" alt="Fullscreen view">
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div>© 2026 REYNACG3. <span data-key="footer-rights">TODOS LOS DERECHOS RESERVADOS.</span></div>
+        <div class="social-links">
+            <a href="mailto:rscorral3g@gmail.com">RSCORRAL3G@GMAIL.COM</a>
+            <a href="https://www.instagram.com/reynacg3?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">INSTAGRAM @REYNACG3</a>
+        </div>
+    </footer>
+
+    <script>
+        // Imágenes de la pestaña ARTE actualizadas
+        const artGalleryLinks = [
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625978/2_tgfrjc.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625978/3_dpu572.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625979/5_pweixo.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625978/6_fbfhje.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625981/20_tn9w75.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625980/15_r4nv2a.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625978/4_y2q40g.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625978/7_jlxkh7.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625979/8_feuq4j.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625979/9_swvo2t.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625979/10_lfshid.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625980/12_pglwgt.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625980/14_yyyxht.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625980/16_fjzpcz.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625979/11_ggci6a.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625981/18_hqz9sg.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625981/17_k1df0c.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625981/19_qhgjvx.jpg"
+        ];
+
+        const uskGalleryLinks = [
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625982/22_bjggcp.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625982/24_kbsoaj.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625982/25_bjkxjl.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625981/21_zuqujf.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625982/23_kzsefw.jpg",
+            "https://res.cloudinary.com/dgtmrjxn7/image/upload/v1778625982/26_knbucx.jpg"
+        ];
+
+        const translations = {
+            es: {
+                "nav-arte": "ARTE", 
+                "nav-usk": "USK", 
+                "nav-about": "ABOUT ME", 
+                "hero-sub": "PORTAFOLIO DE ARTE",
+                "arte-title": "MI ARTE", 
+                "arte-sub": "CON AMOR",
+                "usk-desc": "La arquitectura y el urban sketching han influido profundamente en mi forma de observar y representar el entorno. En Chihuahua participo en las sesiones de USKChihuahua. Con mis dibujos personales, tiendo a ser algo perfeccionista, ya que puedo borrar y empezar de nuevo, pero con los marcadores, me doy la libertad de dejar que los errores se conviertan en parte del resultado final, aprendiendo de ellos para futuras correcciones.",
+                "about-description": "Soy una artista y estudiante de arquitectura interesada en explorar la conexión entre distintas disciplinas creativas. Aunque el grafito es mi técnica principal, disfruto experimentando con diversos materiales, no solo de manera individual, sino también buscando formas de combinarlos, ya sea mezclándolos o identificando visualmente qué materiales se usaron en la pieza final, usando esas mismas técnicas para trabajar con ellos. Me gusta explorar cosas nuevas y encontrar formas de conectarlas con mis otros intereses, buscando maneras de mejorar lo que ya sé, convirtiéndome en principiante en diferentes áreas y complementándolas entre sí. Disfruto dar regalos, compartir y sorprender a otros con mi arte, las sonrisas y los sentimientos que evoco en los demás son lo más valioso para mí.",
+                "footer-rights": "TODOS LOS DERECHOS RESERVADOS."
+            },
+            en: {
+                "nav-arte": "ART", 
+                "nav-usk": "USK", 
+                "nav-about": "ABOUT ME", 
+                "hero-sub": "ART PORTFOLIO",
+                "arte-title": "MY ART", 
+                "arte-sub": "WITH LOVE",
+                "usk-desc": "Architecture and urban sketching have deeply influenced my way of observing and representing the environment. In Chihuahua I participate in USKChihuahua sessions. With my personal drawings, I tend to be somewhat perfectionist, as I can erase and start again, but with markers, I give myself the freedom to let errors become part of the final result, learning from them for future corrections.",
+                "about-description": "I am an artist and architecture student interested in exploring the connection between different creative disciplines. Although graphite is my primary technique, I enjoy experimenting with various materials, not only individually, but also seeking ways to combine them, whether by mixing them or visually identifying what materials were used in the final piece, using those same techniques to work with them. I like to explore new things and find ways to connect them with my other interests, seeking ways to improve what I already know, becoming a beginner in different areas and complementing them with each other. I enjoy giving gifts, sharing, and surprising others with my art; the smiles and feelings I evoke in others are the most valuable thing to me.",
+                "footer-rights": "ALL RIGHTS RESERVED."
+            }
+        };
+
+        let currentLang = 'es';
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            renderArt();
+            renderUSKGallery();
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 1200);
+            }, 1000);
+        });
+
+        function navigateTo(sectionId) {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(sec => {
+                sec.classList.remove('active');
+                sec.style.display = 'none';
+            });
+            const target = document.getElementById(sectionId);
+            target.style.display = (sectionId === 'landing') ? 'flex' : 'block';
+            setTimeout(() => target.classList.add('active'), 50);
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function renderArt() {
+            const container = document.getElementById('art-gallery');
+            container.innerHTML = artGalleryLinks.map(url => `
+                <div class="art-card" onclick="openLightbox('${url}')">
+                    <img src="${url}" loading="lazy">
+                </div>
+            `).join('');
+        }
+
+        function renderUSKGallery() {
+            const container = document.getElementById('usk-gallery');
+            container.innerHTML = uskGalleryLinks.map(url => `
+                <div class="art-card" onclick="openLightbox('${url}')">
+                    <img src="${url}" loading="lazy">
+                </div>
+            `).join('');
+        }
+
+        function openLightbox(url) {
+            const lb = document.getElementById('lightbox');
+            document.getElementById('lb-img').src = url;
+            lb.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            document.getElementById('btn-lang').innerText = currentLang.toUpperCase();
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.getAttribute('data-key');
+                el.innerText = translations[currentLang][key];
+            });
+        }
+    </script>
+</body>
+</html>
